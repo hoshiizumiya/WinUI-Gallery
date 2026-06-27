@@ -42,3 +42,32 @@ private async void RestorePositionButton_Click(object sender, RoutedEventArgs e)
         _persistedPosition,
         key => Task.FromResult<object?>(contacts5.FirstOrDefault(c => c == key))!.AsAsyncOperation()!);
 }
+--- c++
+void MainPage::SavePositionButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::UI::Xaml::RoutedEventArgs const&)
+{
+    // GetRelativeScrollPosition returns an opaque string that identifies the
+    // item currently at the top of the viewport plus its pixel offset.
+    m_persistedPosition = winrt::Microsoft::UI::Xaml::Controls::ListViewPersistenceHelper::GetRelativeScrollPosition(
+        RestoreScrollListView(),
+        [](winrt::Windows::Foundation::IInspectable const& item) { return winrt::unbox_value<winrt::hstring>(item); });
+    SavedPositionTextBlock().Text(L"Saved position: " + m_persistedPosition);
+    RestorePositionButton().IsEnabled(true);
+}
+
+winrt::fire_and_forget MainPage::RestorePositionButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::UI::Xaml::RoutedEventArgs const&)
+{
+    if (m_persistedPosition.empty())
+    {
+        co_return;
+    }
+    // SetRelativeScrollPositionAsync scrolls the ListView back to the item identified
+    // by the saved string. The callback resolves a key back to its data item.
+    co_await winrt::Microsoft::UI::Xaml::Controls::ListViewPersistenceHelper::SetRelativeScrollPositionAsync(
+        RestoreScrollListView(),
+        m_persistedPosition,
+        [this](winrt::hstring const& key) -> winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::IInspectable>
+        {
+            auto item = std::find_if(contacts5.begin(), contacts5.end(), [&key](winrt::hstring const& c) { return c == key; });
+            co_return (item != contacts5.end()) ? winrt::box_value(*item) : nullptr;
+        });
+}
