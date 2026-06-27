@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="WinUIGallery.Controls.ControlExample"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -227,6 +227,11 @@
                                     Loaded="SelectorBarItem_Loaded"
                                     Tag="CSharp"
                                     Text="C#" />
+                                <SelectorBarItem
+                                    x:Name="SelectorBarCppWinRTItem"
+                                    Loaded="SelectorBarItem_Loaded"
+                                    Tag="CppWinRT"
+                                    Text="C++/WinRT" />
                             </SelectorBar>
                         </StackPanel>
 
@@ -261,6 +266,20 @@
                                     Code="{x:Bind CSharp}"
                                     CodeSourceFile="{x:Bind CSharpSource}"
                                     SampleType="CSharp"
+                                    Substitutions="{x:Bind Substitutions}" />
+                            </ContentPresenter>
+                            <ContentPresenter
+                                x:Name="CppWinRTContentPresenter"
+                                IsTabStop="False"
+                                Visibility="Collapsed">
+                                <local:SampleCodePresenter
+                                    x:Name="CppWinRTPresenter"
+                                    Padding="16,0,16,16"
+                                    animations:Implicit.HideAnimations="{StaticResource HideTransitions}"
+                                    animations:Implicit.ShowAnimations="{StaticResource ShowTransitions}"
+                                    Code="{x:Bind CppWinRT}"
+                                    CodeSourceFile="{x:Bind CppWinRTSource}"
+                                    SampleType="CppWinRT"
                                     Substitutions="{x:Bind Substitutions}" />
                             </ContentPresenter>
                         </Grid>
